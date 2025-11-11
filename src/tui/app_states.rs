@@ -141,7 +141,16 @@ pub enum AppState {
     ChoosingRequestExportFormat,
 
     #[strum(to_string = "Displaying request export")]
-    DisplayingRequestExport
+    DisplayingRequestExport,
+
+    #[strum(to_string = "Exporting response")]
+    ExportingResponse,
+
+    #[strum(to_string = "Displaying success popup")]
+    DisplayingSuccessPopup,
+
+    #[strum(to_string = "Displaying error popup")]
+    DisplayingErrorPopup,
 }
 
 pub fn next_app_state(app_state: &AppState) -> AppState {
@@ -182,7 +191,10 @@ pub fn next_app_state(app_state: &AppState) -> AppState {
         EditingPostRequestScript => EditingRequestSettings,
         EditingRequestSettings => ChoosingRequestExportFormat,
         ChoosingRequestExportFormat => DisplayingRequestExport,
-        DisplayingRequestExport => Normal
+        DisplayingRequestExport => ExportingResponse,
+        ExportingResponse => DisplayingSuccessPopup,
+        DisplayingSuccessPopup => DisplayingErrorPopup,
+        DisplayingErrorPopup => Normal
     }
 }
 
@@ -224,7 +236,10 @@ pub fn previous_app_state(app_state: &AppState) -> AppState {
         EditingPostRequestScript => EditingPreRequestScript,
         EditingRequestSettings => EditingPostRequestScript,
         ChoosingRequestExportFormat => EditingRequestSettings,
-        DisplayingRequestExport => ChoosingRequestExportFormat
+        DisplayingRequestExport => ChoosingRequestExportFormat,
+        ExportingResponse => DisplayingRequestExport,
+        DisplayingSuccessPopup => ExportingResponse,
+        DisplayingErrorPopup => DisplayingSuccessPopup,
     }
 }
 
@@ -514,7 +529,8 @@ impl AppState {
                         ScrollResultDown(EventKeyBinding::new(vec![key_bindings.request_selected.result_tabs.scroll_down], "Scroll result down", None)),
                         ScrollResultLeft(EventKeyBinding::new(vec![key_bindings.request_selected.result_tabs.scroll_left], "Scroll result left", None)),
                         ScrollResultRight(EventKeyBinding::new(vec![key_bindings.request_selected.result_tabs.scroll_right], "Scroll result right", None)),
-                    
+
+                        ExportResponse(EventKeyBinding::new(vec![key_bindings.request_selected.result_tabs.export_response], "Export response", Some("Export"))),
                         CopyResponsePart(EventKeyBinding::new(vec![key_bindings.request_selected.result_tabs.yank_response_part], "Yank response part", Some("Yank"))),
                     ];
 
@@ -717,7 +733,18 @@ impl AppState {
                 ScrollRequestExportRight(EventKeyBinding::new(vec![key_bindings.request_selected.result_tabs.scroll_right], "Scroll request export right", None)),
 
                 CopyRequestExport(EventKeyBinding::new(vec![key_bindings.request_selected.result_tabs.yank_response_part], "Yank request export", Some("Yank"))),
-            ]
+            ],
+            ExportingResponse => [
+                vec![
+                    ModifyExportingResponse(EventKeyBinding::new(vec![key_bindings.generic.text_input.save_and_quit_single_line], "Confirm", Some("Confirm"))),
+                    CancelExportingResponse(EventKeyBinding::new(vec![key_bindings.generic.text_input.quit_without_saving], "Cancel", Some("Cancel"))),
+                    KeyEventExportingResponse(EventKeyBinding::new(vec![], "Any input", None))
+                ],
+                generate_text_input_documentation(key_bindings.generic.text_input.mode, true, true)
+            ].concat(),
+            DisplayingSuccessPopup | DisplayingErrorPopup => vec![
+                GoBackToRequestMenu(EventKeyBinding::new(vec![key_bindings.generic.navigation.go_back], "Ok", Some("Ok"))),
+            ],
         }
     }
 }
@@ -932,7 +959,7 @@ impl App<'_> {
             EditingRequestMessage |
             EditingPreRequestScript | EditingPostRequestScript |
             EditingRequestSettings |
-            ChoosingRequestExportFormat | DisplayingRequestExport
+            ChoosingRequestExportFormat | DisplayingRequestExport | ExportingResponse | DisplayingSuccessPopup | DisplayingErrorPopup
             => {
                 let local_selected_request = self.get_selected_request_as_local();
                 let selected_request = local_selected_request.read();
@@ -968,7 +995,8 @@ impl App<'_> {
             EditingRequestHeader |
             EditingRequestBodyTable | EditingRequestBodyFile | EditingRequestBodyString |
             EditingPreRequestScript | EditingPostRequestScript |
-            EditingRequestSettings => true,
+            EditingRequestSettings |
+            ExportingResponse => true,
             _ => false
         }
     }

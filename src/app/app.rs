@@ -149,6 +149,8 @@ pub struct App<'a> {
 
     pub export_request: ChoicePopup<ExportFormat>,
     pub display_request_export: DisplayPopup,
+    pub export_response_input: TextInput,
+    pub validation_popup: ValidationPopup,
 
     #[cfg(feature = "clipboard")]
     pub clipboard: Option<Clipboard>
@@ -307,6 +309,8 @@ impl App<'_> {
                 selection: 0,
             },
             display_request_export: DisplayPopup::default(),
+            export_response_input: TextInput::new(None),
+            validation_popup: ValidationPopup::default(),
 
             #[cfg(feature = "clipboard")]
             clipboard: Clipboard::new().ok(),
