@@ -275,7 +275,7 @@ impl AppState {
                         NextEnvironment(EventKeyBinding::new(vec![key_bindings.main_menu.next_environment], "Next environment", None)),
                         DisplayEnvEditor(EventKeyBinding::new(vec![key_bindings.main_menu.display_env_editor], "Environment editor", None)),
                     ];
-                    
+
                     base_events.extend(env_events);
                 }
 
@@ -283,9 +283,9 @@ impl AppState {
                     DisplayCookies(EventKeyBinding::new(vec![key_bindings.main_menu.display_cookies], "Display cookies", None)),
                     DisplayLogs(EventKeyBinding::new(vec![key_bindings.main_menu.display_logs], "Display logs", None)),
                 ];
-                
+
                 base_events.extend(other_events);
-                
+
                 base_events
             },
             DisplayingEnvEditor => vec![
@@ -413,22 +413,22 @@ impl AppState {
 
                     SendRequest(EventKeyBinding::new(vec![key_bindings.request_selected.send_request, key_bindings.request_selected.alt_send_request], "Send/cancel request", Some("Send/Cancel"))),
                 ];
-                
+
                 if is_there_any_env {
                     let env_events = vec![
                         NextEnvironment(EventKeyBinding::new(vec![key_bindings.main_menu.next_environment], "Next environment", None)),
                         DisplayEnvEditor(EventKeyBinding::new(vec![key_bindings.main_menu.display_env_editor], "Environment editor", None)),
                     ];
-                    
+
                     base_events.extend(env_events);
                 }
-                
+
                 let other_events = vec![
                     DisplayCookies(EventKeyBinding::new(vec![key_bindings.main_menu.display_cookies], "Display cookies", None)),
                     DisplayLogs(EventKeyBinding::new(vec![key_bindings.main_menu.display_logs], "Display logs", None)),
                     ExportRequest(EventKeyBinding::new(vec![key_bindings.request_selected.export_request], "Export request", None)),
                 ];
-                
+
                 base_events.extend(other_events);
 
                 let mut base_param_tabs_events: Vec<AppEvent> = vec![];
@@ -903,7 +903,7 @@ impl App<'_> {
             },
             None => None
         };
-        
+
         *AVAILABLE_EVENTS.write() = self.state.get_available_events(self.request_view, self.request_param_tab, protocol, is_there_any_env);
     }
 
@@ -980,7 +980,7 @@ impl App<'_> {
             }
         }
     }
-    
+
     pub fn in_input(&self) -> bool {
         match self.state {
             EditingEnvVariable |

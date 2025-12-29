@@ -301,8 +301,6 @@ get_key_bindings! {
         ModifyRequestSettings(EventKeyBinding),
 
         /* Others */
-
-        CloseValidationPopup(EventKeyBinding),
         Documentation(EventKeyBinding),
     }
 }
@@ -627,7 +625,7 @@ impl App<'_> {
                 },
                 CancelExportingResponse(_) => match self.export_response_input.is_in_default_mode() {
                     true => self.normal_state(),
-                    false => self.export_response_input.delete_char_forward(),
+                    false => self.export_response_input.key_event(key, None),
                 },
                 KeyEventExportingResponse(_) => self.export_response_input.key_event(key, None),
 
@@ -888,7 +886,6 @@ impl App<'_> {
                 ModifyRequestSettings(_) => self.tui_modify_request_settings(),
 
                 /* Others */
-                CloseValidationPopup(_) => self.select_request_state(),
                 Documentation(_) => {},
             }
         };

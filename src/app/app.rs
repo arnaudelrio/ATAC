@@ -20,6 +20,7 @@ use crate::tui::ui::views::RequestView;
 use crate::tui::utils::stateful::choice_popup::ChoicePopup;
 use crate::tui::utils::stateful::cookies_popup::CookiesPopup;
 use crate::tui::utils::stateful::display_popup::DisplayPopup;
+use crate::tui::utils::stateful::export_confirmation::ExportConfirmation;
 use crate::tui::utils::stateful::help_popup::HelpPopup;
 use crate::tui::utils::stateful::new_request_popup::NewRequestPopup;
 use crate::tui::utils::stateful::script_console::ScriptConsole;
@@ -150,7 +151,7 @@ pub struct App<'a> {
     pub export_request: ChoicePopup<ExportFormat>,
     pub display_request_export: DisplayPopup,
     pub export_response_input: TextInput,
-    pub validation_popup: ValidationPopup,
+    pub export_confirmation_popup: ExportConfirmation,
 
     #[cfg(feature = "clipboard")]
     pub clipboard: Option<Clipboard>
@@ -310,7 +311,7 @@ impl App<'_> {
             },
             display_request_export: DisplayPopup::default(),
             export_response_input: TextInput::new(None),
-            validation_popup: ValidationPopup::default(),
+            export_confirmation_popup: ExportConfirmation::default(),
 
             #[cfg(feature = "clipboard")]
             clipboard: Clipboard::new().ok(),
