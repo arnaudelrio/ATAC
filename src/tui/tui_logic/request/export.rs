@@ -1,3 +1,5 @@
+use std::fs::create_dir_all;
+
 use crate::app::app::App;
 use crate::tui::utils::syntax_highlighting::highlight;
 use ratatui::prelude::Line;
@@ -44,21 +46,30 @@ impl App<'_> {
             None => {
                 self.tui_show_error_popup("No response to export".to_string());
             }
-            Some(ResponseContent::Body(body)) => {
-                let body = body.clone();
-                if let Err(e) = std::fs::write(&path, body) {
-                    self
-                        .tui_show_error_popup(format!("Could not save response to file: {}", e));
-                } else {
-                    self.tui_show_success_popup(format!("Response saved to {}", path));
+            Some(response) => {
+                if let Some(parent) = std::path::Path::new(&path).parent() {
+                    if let Err(e) = create_dir_all(parent) {
+                        self.tui_show_error_popup(format!("Could not create directories: {}", e));
+                        return;
+                    }
                 }
-            }
-            Some(ResponseContent::Image(image_response)) => {
-                if let Err(e) = std::fs::write(&path, &image_response.data) {
-                    self
-                        .tui_show_error_popup(format!("Could not save image response to file: {}", e));
-                } else {
-                    self.tui_show_success_popup(format!("Image response saved to {}", path));
+                match response {
+                    ResponseContent::Body(body) => {
+                        if let Err(e) = std::fs::write(&path, body) {
+                            self
+                                .tui_show_error_popup(format!("Could not save response to file: {}", e));
+                        } else {
+                            self.tui_show_success_popup(format!("Response saved to {}", path));
+                        }
+                    }
+                    ResponseContent::Image(image_response) => {
+                        if let Err(e) = std::fs::write(&path, &image_response.data) {
+                            self
+                                .tui_show_error_popup(format!("Could not save image response to file: {}", e));
+                        } else {
+                            self.tui_show_success_popup(format!("Image response saved to {}", path));
+                        }
+                    }
                 }
             }
         }
